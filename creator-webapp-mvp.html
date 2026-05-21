@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator Webapp — Prototype</title>
+<style>
+  :root {
+    --bg: #f4f2ec;
+    --surface: #ffffff;
+    --ink: #14110f;
+    --ink-soft: #2d2925;
+    --muted: #7b766d;
+    --line: #e6e2d8;
+    --line-soft: #efece4;
+    --accent: #5b3eea;
+    --accent-2: #8b75f0;
+    --accent-soft: #efeaff;
+    --accent-pale: #f7f4ff;
+    --green: #2e7a4d;
+    --green-soft: #e1f1e6;
+    --amber: #c98826;
+    --amber-soft: #fff1d9;
+    --red: #c83b3b;
+    --pink: #ec4899;
+    --orange: #f97316;
+    --teal: #14b8a6;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  article {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 56px 28px 96px;
+  }
+
+  /* ============ HEADER ============ */
+  header.doc-head {
+    margin-bottom: 56px;
+  }
+  .kicker {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 11px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin: 0 0 14px;
+    font-weight: 800;
+  }
+  .subtitle {
+    font-size: 17px;
+    color: var(--muted);
+    margin: 0 0 24px;
+    max-width: 700px;
+  }
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .spec {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .spec strong { color: var(--accent); font-weight: 700; }
+
+  /* ============ SECTIONS ============ */
+  section.flow-section {
+    margin: 64px 0;
+  }
+  .flow-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .flow-head .n {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 4px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+  }
+  .flow-head h2 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .flow-desc {
+    color: var(--muted);
+    margin: 0 0 28px;
+    font-size: 14.5px;
+    max-width: 720px;
+  }
+
+  /* ============ PHONE LAYOUT ============ */
+  .flow-row {
+    display: flex;
+    gap: 32px;
+    overflow-x: auto;
+    padding: 8px 0 24px;
+    align-items: flex-start;
+  }
+  .flow-row::-webkit-scrollbar { height: 8px; }
+  .flow-row::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+  .phone-cell {
+    flex-shrink: 0;
+    width: 290px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .phone-caption {
+    margin-top: 14px;
+    text-align: center;
+    width: 100%;
+  }
+  .phone-caption .pc-step {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .phone-caption .pc-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .phone-caption .pc-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ============ PHONE FRAME ============ */
+  .phone {
+    width: 290px;
+    background: #14110f;
+    border-radius: 42px;
+    padding: 8px;
+    box-shadow:
+      0 30px 60px -20px rgba(20,17,15,0.25),
+      0 0 0 1px rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .phone .screen {
+    width: 100%;
+    height: 580px;
+    background: var(--bg);
+    border-radius: 34px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 22px;
+    background: #14110f;
+    border-radius: 0 0 14px 14px;
+    z-index: 5;
+  }
+  .statusbar {
+    padding: 14px 22px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink);
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .statusbar .icons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .signal-dot {
+    width: 4px; height: 4px;
+    background: var(--ink);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .signal { display:inline-flex; gap:2px; align-items:flex-end; }
+  .signal span { width: 3px; background: var(--ink); border-radius: 1px; }
+  .signal span:nth-child(1){ height:4px; }
+  .signal span:nth-child(2){ height:6px; }
+  .signal span:nth-child(3){ height:8px; }
+  .battery {
+    width: 18px; height: 9px;
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    position: relative;
+    padding: 1px;
+  }
+  .battery::after {
+    content:"";
+    position: absolute;
+    right: -2.5px; top: 2px;
+    width: 1.5px; height: 4px;
+    background: var(--ink);
+    border-radius: 0 1px 1px 0;
+  }
+  .battery span {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+    border-radius: 1px;
+    width: 80%;
+  }
+
+  .app-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 18px 0;
+    background: var(--bg);
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .app-header .left, .app-header .right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .app-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    position: relative;
+  }
+  .icon-btn .dot {
+    position: absolute;
+    top: 5px; right: 5px;
+    width: 7px; height: 7px;
+    background: var(--red);
+    border: 2px solid var(--surface);
+    border-radius: 50%;
+  }
+  .back-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f9a8d4, #a78bfa);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .avatar.sm { width: 28px; height: 28px; font-size: 11px; }
+  .avatar.lg { width: 64px; height: 64px; font-size: 22px; }
+  .avatar.xl { width: 84px; height: 84px; font-size: 28px; }
+
+  /* Brand logos (colored letter circles) */
+  .brand-logo {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .brand-logo.sm { width: 28px; height: 28px; font-size: 11px; border-radius: 8px; }
+  .brand-logo.lg { width: 52px; height: 52px; font-size: 20px; border-radius: 14px; }
+  .bl-mama { background: linear-gradient(135deg, #16a34a, #15803d); }
+  .bl-nyka { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .bl-owl { background: linear-gradient(135deg, #92400e, #78350f); }
+  .bl-boat { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .bl-myntra { background: linear-gradient(135deg, #f97316, #ea580c); }
+  .bl-zomato { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+  .bl-cred { background: linear-gradient(135deg, #1f2937, #111827); }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .card + .card { margin-top: 10px; }
+
+  .scroll-area {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Bottom nav */
+  .tabbar {
+    height: 62px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-shrink: 0;
+    padding-bottom: 6px;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .tab .ic {
+    font-size: 17px;
+    line-height: 1;
+  }
+  .tab.active { color: var(--accent); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 100%;
+    gap: 6px;
+  }
+  .btn.outline {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    height: 36px;
+  }
+  .btn.sm { height: 34px; font-size: 12px; padding: 0 12px; }
+
+  /* Stat strip inside phone */
+  .pipeline-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .pip {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 6px;
+    text-align: center;
+  }
+  .pip .num { font-size: 16px; font-weight: 800; color: var(--ink); line-height: 1.1; }
+  .pip .lab { font-size: 9.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 3px; }
+  .pip.hl .num { color: var(--accent); }
+
+  /* Section labels inside phone */
+  .sec-lbl {
+    font-size: 10.5px;
+    color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 12px 0 6px;
+  }
+
+  /* Offer cards */
+  .offer-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 13px;
+    margin-bottom: 9px;
+    display: flex;
+    gap: 11px;
+  }
+  .offer-card .meta { flex: 1; min-width: 0; }
+  .offer-card .row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+  .offer-card .brand {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .offer-card .time {
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+  .offer-card .deliv {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin: 3px 0 6px;
+    line-height: 1.3;
+  }
+  .offer-card .row3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .offer-card .rate {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .badge {
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge.new { background: var(--accent); color: white; }
+  .badge.view { background: var(--line-soft); color: var(--muted); }
+  .badge.expire { background: var(--amber-soft); color: var(--amber); }
+  .badge.ok { background: var(--green-soft); color: var(--green); }
+
+  /* Tabs */
+  .pill-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .pill-tabs::-webkit-scrollbar { display: none; }
+  .pill {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 13px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+  .pill.active {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    margin: 12px 0 16px;
+    padding: 0 4px;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+  .step .dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--line-soft);
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    border: 2px solid var(--bg);
+    z-index: 2;
+    position: relative;
+  }
+  .step.done .dot { background: var(--green); color: white; }
+  .step.current .dot { background: var(--accent); color: white; box-shadow: 0 0 0 4px var(--accent-soft); }
+  .step .lbl {
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .step.done .lbl, .step.current .lbl { color: var(--ink); }
+  .step-line {
+    flex: 0 0 14px;
+    height: 2px;
+    background: var(--line);
+    margin: 0 -2px;
+    margin-top: -16px;
+  }
+  .step-line.done { background: var(--green); }
+
+  /* Deliverable list */
+  .deliv-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .deliv-item .check {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--line-soft);
+    background: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: transparent;
+  }
+  .deliv-item.done .check {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .deliv-item.review .check {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: white;
+  }
+  .deliv-item .body { flex: 1; min-width: 0; }
+  .deliv-item .nm { font-size: 12.5px; font-weight: 700; }
+  .deliv-item .st { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+
+  /* Profile sample posts */
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin: 10px 0;
+  }
+  .post {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  }
+  .post:nth-child(2) { background: linear-gradient(135deg, #fbcfe8, #f9a8d4); }
+  .post:nth-child(3) { background: linear-gradient(135deg, #bae6fd, #7dd3fc); }
+
+  /* Trust list */
+  .trust {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+  }
+  .trust li {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .trust li .tick {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    color: var(--green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* Connector arrow between phones */
+  .connector {
+    flex-shrink: 0;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    color: var(--line-soft);
+    font-size: 24px;
+    padding: 0 6px;
+    margin-top: -40px;
+  }
+
+  /* Bottom feature list */
+  .features {
+    margin-top: 64px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 32px;
+  }
+  .features h2 { margin: 0 0 18px; font-size: 20px; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .feat {
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+  }
+  .feat .ft { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+  .feat .fd { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* OAuth/IG specific */
+  .ig-logo {
+    width: 80px; height: 80px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 36px;
+    font-weight: 800;
+  }
+
+  /* Brand-led hero card */
+  .invite-hero {
+    background: linear-gradient(140deg, var(--accent) 0%, #8b5cf6 100%);
+    border-radius: 18px;
+    padding: 22px 18px;
+    color: white;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .invite-hero .brand-logo {
+    margin: 0 auto 12px;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.18);
+  }
+  .invite-hero .ih-title {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .invite-hero .ih-sub {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+  .invite-hero .ih-offer {
+    background: rgba(255,255,255,0.18);
+    border-radius: 10px;
+    padding: 10px;
+    backdrop-filter: blur(4px);
+  }
+  .invite-hero .ih-offer .rate { font-size: 22px; font-weight: 800; }
+  .invite-hero .ih-offer .deliv { font-size: 11.5px; opacity: 0.92; margin-top: 2px; }
+
+  /* WhatsApp pipe banner */
+  .wa-banner {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 10px;
+    padding: 9px 11px;
+    font-size: 11px;
+    color: #065f46;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .wa-banner .wa-ico {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #25d366;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  /* Settings rows */
+  .set-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .set-row:last-child { border-bottom: none; }
+  .set-row .nm { font-size: 13px; font-weight: 600; }
+  .set-row .va { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .chevron { color: var(--muted); font-size: 13px; }
+
+  /* Analytics */
+  .period-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .period-tabs .pill { flex: 1; text-align: center; }
+
+  .metric-hero {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .metric-hero .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+  .metric-hero .big {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .metric-hero .delta {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 700;
+    margin-top: 3px;
+  }
+  .metric-hero .delta.down { color: var(--red); }
+
+  .chart-svg {
+    width: 100%;
+    height: 50px;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+  .metric-grid .mc {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 11px;
+  }
+  .metric-grid .mc .lbl { font-size: 9px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .metric-grid .mc .v { font-size: 15px; font-weight: 800; margin-top: 2px; }
+  .metric-grid .mc .d { font-size: 9.5px; color: var(--green); margin-top: 1px; font-weight: 700; }
+  .metric-grid .mc .d.dn { color: var(--red); }
+
+  .top-post {
+    display: flex;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+    align-items: center;
+  }
+  .top-post .thumb {
+    width: 54px; height: 54px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+  .top-post .meta { flex: 1; min-width: 0; }
+  .top-post .ttl { font-size: 11.5px; font-weight: 700; line-height: 1.3; }
+  .top-post .sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .top-post .stats {
+    display: flex;
+    gap: 10px;
+    font-size: 10.5px;
+    margin-top: 4px;
+    color: var(--ink-soft);
+  }
+  .top-post .stats strong { color: var(--ink); font-weight: 800; }
+
+  .deal-hero {
+    background: linear-gradient(140deg, var(--accent) 0%, #8b5cf6 100%);
+    color: white;
+    border-radius: 14px;
+    padding: 16px 14px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .deal-hero .l { font-size: 10px; opacity: 0.85; text-transform: uppercase; font-weight: 700; letter-spacing: .08em; }
+  .deal-hero .b { font-size: 22px; font-weight: 800; margin-top: 4px; line-height: 1.2; letter-spacing: -0.01em; }
+  .deal-hero .s { font-size: 11px; opacity: 0.85; margin-top: 4px; }
+
+  .perf-row {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-bottom: 6px;
+  }
+  .perf-row .top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .perf-row .nm { font-size: 11.5px; font-weight: 700; flex: 1; min-width: 0; }
+  .perf-row .mu { font-size: 11px; font-weight: 800; }
+  .perf-row .mu.up { color: var(--green); }
+  .perf-row .mu.dn { color: var(--amber); }
+  .perf-row .bar-wrap {
+    background: var(--line-soft);
+    border-radius: 4px;
+    height: 6px;
+    position: relative;
+    overflow: visible;
+  }
+  .perf-row .fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--accent);
+    border-radius: 4px;
+  }
+  .perf-row .fill.bad { background: var(--amber); }
+  .perf-row .baseline {
+    position: absolute;
+    top: -3px; bottom: -3px;
+    width: 2px;
+    background: var(--ink);
+    border-radius: 1px;
+    z-index: 2;
+  }
+
+  .insight-card {
+    background: var(--accent-pale);
+    border: 1px solid var(--accent-3);
+    border-radius: 12px;
+    padding: 11px 12px;
+    margin-top: 10px;
+  }
+  .insight-card .l {
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: .08em;
+    margin-bottom: 4px;
+  }
+  .insight-card .txt { font-size: 12px; line-height: 1.4; color: var(--ink-soft); }
+
+  .age-row {
+    display: grid;
+    grid-template-columns: 46px 1fr 32px;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    margin-bottom: 7px;
+  }
+  .age-row:last-child { margin-bottom: 0; }
+  .age-row .agl { color: var(--ink-soft); font-weight: 600; }
+  .age-row .agbar {
+    background: var(--line-soft);
+    border-radius: 3px;
+    height: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .age-row .agfill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+  .age-row .agv { font-weight: 800; font-size: 10.5px; text-align: right; }
+
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .donut { width: 70px; height: 70px; flex-shrink: 0; }
+  .donut-legend { flex: 1; }
+  .donut-legend .lr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    padding: 3px 0;
+  }
+  .donut-legend .lr .lk { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); }
+  .donut-legend .lr .lk::before {
+    content: "";
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+  .donut-legend .lr.m .lk::before { background: var(--accent-2); }
+  .donut-legend .lr.o .lk::before { background: var(--accent-3); }
+  .donut-legend .lr strong { font-weight: 800; }
+
+  .loc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    font-size: 12px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .loc-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .loc-row:first-child { padding-top: 0; }
+  .loc-row .lnm { font-weight: 600; }
+  .loc-row .lpct { color: var(--muted); font-size: 11px; font-weight: 700; }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .tag {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  /* @media adjustments */
+  @media (max-width: 720px) {
+    article { padding: 36px 18px 64px; }
+    h1 { font-size: 28px; }
+    .flow-head h2 { font-size: 19px; }
+    .features { padding: 22px 20px; }
+  }
+  @media print {
+    body { background: white; }
+    .phone { break-inside: avoid; }
+    .flow-row { overflow: visible; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<article>
+
+  <header class="doc-head">
+    <span class="kicker">Internal · Creator Webapp Prototype</span>
+    <h1>Creator Webapp</h1>
+    <p class="subtitle">Mobile-first PWA where invited creators claim their profile, see brand offers, and manage active deals end-to-end.</p>
+    <div class="specs">
+      <div class="spec"><strong>6</strong> core flows</div>
+      <div class="spec"><strong>PWA</strong> · no native app</div>
+      <div class="spec"><strong>Phyllo</strong> OAuth for claim + analytics</div>
+      <div class="spec"><strong>WhatsApp</strong> via Composio for live comms</div>
+      <div class="spec">Brand pays creator <strong>direct</strong></div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       FLOW 1 — CLAIM
+       ============================================================ -->
+  <section class="flow-section">
+    <div class="flow-head">
+      <span class="n">FLOW 01</span>
+      <h2>Claim flow</h2>
+    </div>
+    <p class="flow-desc">Creator clicks the brand-led invite link (WhatsApp/email) → sees the offer → connects Instagram via Phyllo to claim. Identity verification + analytics + offer reveal in one motion.</p>
+
+    <div class="flow-row">
+      <!-- SCREEN 1: INVITE LANDING -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left" style="font-size:12px;font-weight:700;color:var(--muted)">influence.in</div>
+                <div class="right"><div class="icon-btn">✕</div></div>
+              </div>
+              <div class="scroll-area">
+                <div class="invite-hero">
+                  <div class="brand-logo lg bl-mama">M</div>
+                  <div class="ih-title">Mamaearth wants to<br>work with you</div>
+                  <div class="ih-sub">Verified brand · 4.8K reviews</div>
+                  <div class="ih-offer">
+                    <div class="rate">₹35,000</div>
+                    <div class="deliv">1 Reel + 2 Stories · Vitamin C campaign</div>
+                  </div>
+                </div>
+                <button class="btn">View offer →</button>
+                <button class="btn ghost" style="margin-top:6px;">Maybe later</button>
+                <div style="margin-top:14px;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.4;">
+                  You received this because Mamaearth shortlisted your profile.<br>You can decline without claiming.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">01 · LANDING</div>
+          <div class="pc-name">Brand-led invite</div>
+          <div class="pc-desc">Concrete offer up front. No "join our platform" pitch.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 2: PROFILE PREVIEW -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Claim your profile</div>
+                <div class="right" style="width:32px"></div>
+              </div>
+              <div class="scroll-area">
+                <div class="card" style="text-align:center;padding:16px 14px;">
+                  <div class="avatar xl" style="margin:0 auto 10px;">PR</div>
+                  <div style="font-size:15px;font-weight:800;">@priya.reads</div>
+                  <div style="font-size:11.5px;color:var(--muted);margin:2px 0 10px;">Books · Lifestyle · Wellness</div>
+                  <div style="display:flex;justify-content:center;gap:18px;font-size:11px;">
+                    <div><div style="font-weight:800;font-size:14px;color:var(--ink)">85.2K</div><div style="color:var(--muted)">followers</div></div>
+                    <div><div style="font-weight:800;font-size:14px;color:var(--ink)">4.2%</div><div style="color:var(--muted)">engagement</div></div>
+                    <div><div style="font-weight:800;font-size:14px;color:var(--ink)">India</div><div style="color:var(--muted)">audience</div></div>
+                  </div>
+                  <div class="post-grid">
+                    <div class="post"></div>
+                    <div class="post"></div>
+                    <div class="post"></div>
+                  </div>
+                  <div style="font-size:10.5px;color:var(--muted);">This is what brands see</div>
+                </div>
+                <ul class="trust">
+                  <li><span class="tick">✓</span> We never post on your behalf</li>
+                  <li><span class="tick">✓</span> Disconnect anytime</li>
+                  <li><span class="tick">✓</span> Numbers stay private to you</li>
+                </ul>
+              </div>
+              <div style="padding: 12px 0 16px;">
+                <button class="btn">Connect Instagram to claim</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">02 · PREVIEW</div>
+          <div class="pc-name">Profile pre-filled</div>
+          <div class="pc-desc">Data from scrape. Creator sees what brands see, then OAuth-claims.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 3: OAUTH -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Verify it's you</div>
+                <div class="right" style="width:32px"></div>
+              </div>
+              <div class="scroll-area" style="text-align:center;padding-top:18px;">
+                <div class="ig-logo">IG</div>
+                <div style="font-size:16px;font-weight:800;margin:18px 0 4px;">Connect Instagram</div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.4;">Powered by Phyllo · trusted by<br>500+ creator platforms</div>
+                <div class="card" style="text-align:left;">
+                  <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em;margin-bottom:8px;">We'll access</div>
+                  <div style="font-size:12px;display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="color:var(--green);">✓</span> Account info &amp; verified follower count</div>
+                  <div style="font-size:12px;display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="color:var(--green);">✓</span> Engagement &amp; recent post analytics</div>
+                  <div style="font-size:12px;display:flex;gap:8px;align-items:center;"><span style="color:var(--red);">✕</span> No ability to post on your behalf</div>
+                </div>
+              </div>
+              <div style="padding: 12px 0 16px;">
+                <button class="btn">Continue to Instagram</button>
+                <button class="btn ghost" style="margin-top:4px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">03 · OAUTH</div>
+          <div class="pc-name">Phyllo connect</div>
+          <div class="pc-desc">Identity verification + canonical data pipe. One step, three jobs.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FLOW 2 — HOME / PIPELINE
+       ============================================================ -->
+  <section class="flow-section">
+    <div class="flow-head">
+      <span class="n">FLOW 02</span>
+      <h2>Home &amp; pipeline</h2>
+    </div>
+    <p class="flow-desc">After claim, the creator lands here. Snapshot of brand activity, active offers, and upcoming work. Information they don't have on Instagram or in WhatsApp.</p>
+
+    <div class="flow-row">
+      <!-- SCREEN 4: HOME / PIPELINE -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left">
+                  <div class="avatar">PR</div>
+                  <div>
+                    <div style="font-size:11px;color:var(--muted);line-height:1;">Hi Priya</div>
+                    <div style="font-size:15px;font-weight:800;line-height:1.2;">Your pipeline</div>
+                  </div>
+                </div>
+                <div class="right"><div class="icon-btn">🔔<span class="dot"></span></div></div>
+              </div>
+
+              <div class="scroll-area">
+                <div class="pipeline-strip">
+                  <div class="pip"><div class="num">3</div><div class="lab">Viewed</div></div>
+                  <div class="pip hl"><div class="num">2</div><div class="lab">Offers</div></div>
+                  <div class="pip"><div class="num">1</div><div class="lab">Active</div></div>
+                  <div class="pip"><div class="num">₹0</div><div class="lab">Pending</div></div>
+                </div>
+
+                <div class="sec-lbl">New offer · Just now</div>
+                <div class="card" style="display:flex;gap:11px;align-items:center;border-color:var(--accent-2);background:var(--accent-pale);">
+                  <div class="brand-logo bl-mama">M</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:12.5px;font-weight:800;">Mamaearth</div>
+                    <div style="font-size:11px;color:var(--muted);">₹35K · Vitamin C campaign</div>
+                  </div>
+                  <button class="btn sm" style="width:auto;">View</button>
+                </div>
+
+                <div class="sec-lbl">Brands viewing you</div>
+                <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;">
+                  <div class="card" style="min-width:90px;text-align:center;padding:11px 8px;flex-shrink:0;">
+                    <div class="brand-logo bl-nyka" style="margin:0 auto 6px;">N</div>
+                    <div style="font-size:10.5px;font-weight:700;">Nykaa</div>
+                    <div style="font-size:9.5px;color:var(--muted);">2d ago</div>
+                  </div>
+                  <div class="card" style="min-width:90px;text-align:center;padding:11px 8px;flex-shrink:0;">
+                    <div class="brand-logo bl-owl" style="margin:0 auto 6px;">SO</div>
+                    <div style="font-size:10.5px;font-weight:700;">Sleepy Owl</div>
+                    <div style="font-size:9.5px;color:var(--muted);">3d ago</div>
+                  </div>
+                  <div class="card" style="min-width:90px;text-align:center;padding:11px 8px;flex-shrink:0;">
+                    <div class="brand-logo bl-myntra" style="margin:0 auto 6px;">M</div>
+                    <div style="font-size:10.5px;font-weight:700;">Myntra</div>
+                    <div style="font-size:9.5px;color:var(--muted);">5d ago</div>
+                  </div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab active"><span class="ic">⌂</span>Home</div>
+                <div class="tab"><span class="ic">✉</span>Offers</div>
+                <div class="tab"><span class="ic">▣</span>Deals</div>
+                <div class="tab"><span class="ic">⊙</span>Profile</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">04 · HOME</div>
+          <div class="pc-name">Pipeline dashboard</div>
+          <div class="pc-desc">Brand interest visibility — the daily/weekly draw.</div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: OFFERS LIST -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="app-title">Offers</div>
+                <div class="right"><div class="icon-btn">⊻</div></div>
+              </div>
+              <div class="scroll-area">
+                <div class="pill-tabs">
+                  <div class="pill active">All <span style="opacity:.7;">5</span></div>
+                  <div class="pill">New <span style="opacity:.7;">2</span></div>
+                  <div class="pill">Pending</div>
+                  <div class="pill">Accepted</div>
+                </div>
+
+                <div class="offer-card">
+                  <div class="brand-logo bl-mama">M</div>
+                  <div class="meta">
+                    <div class="row1">
+                      <div class="brand">Mamaearth</div>
+                      <div class="time">2h ago</div>
+                    </div>
+                    <div class="deliv">1 Reel + 2 Stories · Vitamin C launch</div>
+                    <div class="row3">
+                      <div class="rate">₹35,000</div>
+                      <span class="badge new">New</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="offer-card">
+                  <div class="brand-logo bl-nyka">N</div>
+                  <div class="meta">
+                    <div class="row1">
+                      <div class="brand">Nykaa</div>
+                      <div class="time">1d ago</div>
+                    </div>
+                    <div class="deliv">2 Reels · Skincare collab</div>
+                    <div class="row3">
+                      <div class="rate">₹52,000</div>
+                      <span class="badge view">Viewed</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="offer-card">
+                  <div class="brand-logo bl-owl">SO</div>
+                  <div class="meta">
+                    <div class="row1">
+                      <div class="brand">Sleepy Owl</div>
+                      <div class="time">3d ago</div>
+                    </div>
+                    <div class="deliv">1 Story · Coffee tasting</div>
+                    <div class="row3">
+                      <div class="rate">₹18,000</div>
+                      <span class="badge expire">Expires 1d</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="offer-card" style="opacity:.7;">
+                  <div class="brand-logo bl-boat">b</div>
+                  <div class="meta">
+                    <div class="row1">
+                      <div class="brand">boAt</div>
+                      <div class="time">5d ago</div>
+                    </div>
+                    <div class="deliv">1 Reel · Headphone launch</div>
+                    <div class="row3">
+                      <div class="rate">₹42,000</div>
+                      <span class="badge ok">Accepted</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab"><span class="ic">⌂</span>Home</div>
+                <div class="tab active"><span class="ic">✉</span>Offers</div>
+                <div class="tab"><span class="ic">▣</span>Deals</div>
+                <div class="tab"><span class="ic">⊙</span>Profile</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">05 · OFFERS</div>
+          <div class="pc-name">Inbox</div>
+          <div class="pc-desc">Filterable list of brand offers — sortable by status &amp; recency.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FLOW 3 — OFFER DETAIL & RESPONSE
+       ============================================================ -->
+  <section class="flow-section">
+    <div class="flow-head">
+      <span class="n">FLOW 03</span>
+      <h2>Offer detail &amp; response</h2>
+    </div>
+    <p class="flow-desc">Tap an offer to see the full brief, deliverables, rate, timeline. Accept, counter, or decline — accepting triggers our take-rate invoice automatically.</p>
+
+    <div class="flow-row">
+      <!-- SCREEN 6: OFFER DETAIL -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Offer</div>
+                <div class="right"><div class="icon-btn">⋯</div></div>
+              </div>
+              <div class="scroll-area">
+                <div style="display:flex;gap:11px;align-items:center;margin-bottom:14px;">
+                  <div class="brand-logo lg bl-mama">M</div>
+                  <div>
+                    <div style="font-size:14.5px;font-weight:800;">Mamaearth</div>
+                    <div style="font-size:10.5px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;">
+                      <span style="width:14px;height:14px;background:var(--green);color:white;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8px;">✓</span>
+                      Verified brand
+                    </div>
+                  </div>
+                </div>
+
+                <div style="font-size:14px;font-weight:800;line-height:1.3;margin-bottom:4px;">Vitamin C Range Launch</div>
+                <div style="font-size:11.5px;color:var(--muted);line-height:1.4;margin-bottom:12px;">Promote our new Vitamin C serum to your audience. Authentic review style. Target: women, 22–35, India.</div>
+
+                <div class="sec-lbl" style="margin-top:0;">Deliverables</div>
+                <div class="card">
+                  <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;">
+                    <span>📹 Instagram Reel</span><strong>60–90s</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-top:1px solid var(--line-soft);">
+                    <span>📷 Story posts</span><strong>2</strong>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+                  <div class="card" style="text-align:center;padding:10px 8px;">
+                    <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Rate</div>
+                    <div style="font-size:17px;font-weight:800;margin-top:2px;">₹35,000</div>
+                  </div>
+                  <div class="card" style="text-align:center;padding:10px 8px;">
+                    <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Post by</div>
+                    <div style="font-size:13px;font-weight:800;margin-top:2px;line-height:1.2;">Dec 15<br><span style="font-size:10px;color:var(--muted);font-weight:600;">in 14 days</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="padding: 12px 0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button class="btn outline">Counter</button>
+                <button class="btn">Accept</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">06 · OFFER DETAIL</div>
+          <div class="pc-name">Brief + rate + timeline</div>
+          <div class="pc-desc">Everything needed to decide in one view. Decline lives in ⋯ menu.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 7: COUNTER (NEGOTIATION) -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Counter offer</div>
+                <div class="right" style="width:32px"></div>
+              </div>
+              <div class="scroll-area">
+                <div style="font-size:11.5px;color:var(--muted);margin-bottom:12px;">Edit any field. Mamaearth will see the changes before signing off.</div>
+
+                <div class="sec-lbl" style="margin-top:0;">Your rate</div>
+                <div class="card" style="padding:14px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:22px;font-weight:800;">₹45,000</span>
+                    <span style="font-size:11px;color:var(--muted);text-decoration:line-through;">₹35,000</span>
+                  </div>
+                  <div style="font-size:10px;color:var(--green);margin-top:4px;font-weight:600;">+₹10,000 from offer</div>
+                </div>
+
+                <div class="sec-lbl">Deliverables</div>
+                <div class="card">
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:7px 0;">
+                    <span>Instagram Reel</span>
+                    <span style="display:flex;align-items:center;gap:8px;"><button class="btn outline sm" style="width:auto;height:24px;padding:0 8px;font-size:11px;">−</button><strong>1</strong><button class="btn outline sm" style="width:auto;height:24px;padding:0 8px;font-size:11px;">+</button></span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line-soft);">
+                    <span>Story posts</span>
+                    <span style="display:flex;align-items:center;gap:8px;"><button class="btn outline sm" style="width:auto;height:24px;padding:0 8px;font-size:11px;">−</button><strong>3</strong><button class="btn outline sm" style="width:auto;height:24px;padding:0 8px;font-size:11px;">+</button></span>
+                  </div>
+                </div>
+
+                <div class="sec-lbl">Note to brand <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;">(optional)</span></div>
+                <div class="card" style="padding:11px;font-size:12px;color:var(--ink-soft);min-height:60px;line-height:1.4;">
+                  Happy to do this — adding an extra story for better narrative arc. My base for this category is ₹45K.
+                </div>
+              </div>
+
+              <div style="padding: 12px 0 16px;">
+                <button class="btn">Send counter →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">07 · COUNTER</div>
+          <div class="pc-name">Negotiation in-product</div>
+          <div class="pc-desc">Rate / deliverables editable, optional note, single back-and-forth.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 8: ACCEPTED CONFIRMATION -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left" style="width:32px"></div>
+                <div class="app-title" style="font-size:14px;">&nbsp;</div>
+                <div class="right"><div class="icon-btn">✕</div></div>
+              </div>
+              <div class="scroll-area" style="text-align:center;padding-top:30px;">
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--green-soft);color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:42px;font-weight:800;margin-bottom:18px;">✓</div>
+                <div style="font-size:20px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;">Offer accepted</div>
+                <div style="font-size:13px;color:var(--muted);line-height:1.45;margin-bottom:20px;">Mamaearth has been notified.<br>Your brief is ready inside <strong style="color:var(--ink);">Deals</strong>.</div>
+
+                <div class="card" style="text-align:left;">
+                  <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em;margin-bottom:8px;">What happens next</div>
+                  <div style="font-size:12px;display:flex;gap:8px;margin-bottom:8px;"><span style="color:var(--accent);font-weight:800;">1</span> Review brief &amp; assets</div>
+                  <div style="font-size:12px;display:flex;gap:8px;margin-bottom:8px;"><span style="color:var(--accent);font-weight:800;">2</span> Submit drafts within 7 days</div>
+                  <div style="font-size:12px;display:flex;gap:8px;margin-bottom:8px;"><span style="color:var(--accent);font-weight:800;">3</span> Post by Dec 15</div>
+                  <div style="font-size:12px;display:flex;gap:8px;"><span style="color:var(--accent);font-weight:800;">4</span> Mamaearth pays you within 30 days</div>
+                </div>
+              </div>
+              <div style="padding: 12px 0 16px;">
+                <button class="btn">Open deal →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">08 · ACCEPTED</div>
+          <div class="pc-name">Deal triggered</div>
+          <div class="pc-desc">Confirmation + clear next steps. Take-rate invoice fires server-side.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FLOW 4 — ACTIVE DEAL
+       ============================================================ -->
+  <section class="flow-section">
+    <div class="flow-head">
+      <span class="n">FLOW 04</span>
+      <h2>Active deal</h2>
+    </div>
+    <p class="flow-desc">The lock-in. Briefs, drafts, approvals, and progress in one place — replacing the typical WhatsApp + Drive + Sheets chaos. Brand sees the same state on their side.</p>
+
+    <div class="flow-row">
+      <!-- SCREEN 9: DEAL VIEW -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Mamaearth · Vit C</div>
+                <div class="right"><div class="icon-btn">⋯</div></div>
+              </div>
+              <div class="scroll-area">
+                <div class="stepper">
+                  <div class="step done"><div class="dot">✓</div><div class="lbl">Brief</div></div>
+                  <div class="step-line done"></div>
+                  <div class="step current"><div class="dot">2</div><div class="lbl">Drafts</div></div>
+                  <div class="step-line"></div>
+                  <div class="step"><div class="dot">3</div><div class="lbl">Approve</div></div>
+                  <div class="step-line"></div>
+                  <div class="step"><div class="dot">4</div><div class="lbl">Posted</div></div>
+                  <div class="step-line"></div>
+                  <div class="step"><div class="dot">5</div><div class="lbl">Paid</div></div>
+                </div>
+
+                <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+                  <div>
+                    <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em;">Campaign brief</div>
+                    <div style="font-size:12.5px;font-weight:700;margin-top:2px;">Vitamin C Range · Post Dec 15</div>
+                  </div>
+                  <div style="color:var(--muted);">›</div>
+                </div>
+
+                <div class="sec-lbl">Deliverables · 1/3</div>
+                <div class="deliv-item review">
+                  <div class="check">⏳</div>
+                  <div class="body">
+                    <div class="nm">Instagram Reel</div>
+                    <div class="st">Submitted · Awaiting approval</div>
+                  </div>
+                </div>
+                <div class="deliv-item">
+                  <div class="check">+</div>
+                  <div class="body">
+                    <div class="nm">Story 1</div>
+                    <div class="st">Not started · due Dec 15</div>
+                  </div>
+                </div>
+                <div class="deliv-item">
+                  <div class="check">+</div>
+                  <div class="body">
+                    <div class="nm">Story 2</div>
+                    <div class="st">Not started · due Dec 15</div>
+                  </div>
+                </div>
+
+                <div class="wa-banner">
+                  <div class="wa-ico">W</div>
+                  <span>Messages with brand are piped from WhatsApp · <strong>Open chat</strong></span>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab"><span class="ic">⌂</span>Home</div>
+                <div class="tab"><span class="ic">✉</span>Offers</div>
+                <div class="tab active"><span class="ic">▣</span>Deals</div>
+                <div class="tab"><span class="ic">⊙</span>Profile</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">09 · DEAL VIEW</div>
+          <div class="pc-name">Single source of truth</div>
+          <div class="pc-desc">Status, brief, deliverables, comms — all visible to both sides.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 10: UPLOAD DELIVERABLE -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Upload Reel</div>
+                <div class="right" style="width:32px"></div>
+              </div>
+              <div class="scroll-area">
+                <div style="background:linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);border-radius:14px;aspect-ratio:9/14;display:flex;align-items:center;justify-content:center;color:white;font-size:42px;margin-bottom:12px;position:relative;">
+                  ▶
+                  <div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:3px 6px;border-radius:4px;font-weight:600;">vitc_draft.mp4 · 1:14</div>
+                </div>
+
+                <div class="card">
+                  <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em;margin-bottom:6px;">Caption</div>
+                  <div style="font-size:12px;line-height:1.45;">Tried @mamaearth.in's new Vitamin C serum for 2 weeks — here's my honest review ✨ ...</div>
+                </div>
+
+                <div class="sec-lbl">Brand checklist</div>
+                <ul class="trust">
+                  <li><span class="tick">✓</span> @mamaearth.in tagged in caption</li>
+                  <li><span class="tick">✓</span> #VitaminCRange used</li>
+                  <li><span class="tick">✓</span> Product visible in first 3s</li>
+                  <li><span class="tick" style="background:var(--amber-soft);color:var(--amber);">!</span> Discount code &mdash; add MAMA20</li>
+                </ul>
+              </div>
+              <div style="padding: 12px 0 16px;">
+                <button class="btn">Submit for review</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">10 · UPLOAD</div>
+          <div class="pc-name">Submit deliverable</div>
+          <div class="pc-desc">Inline brand checklist catches caption issues before review.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 11: FEEDBACK -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Feedback · v1</div>
+                <div class="right"><div class="icon-btn">⋯</div></div>
+              </div>
+              <div class="scroll-area">
+                <div class="card" style="border-left:3px solid var(--amber);background:var(--amber-soft);border-color:#f3d18d;">
+                  <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                    <div class="brand-logo sm bl-mama">M</div>
+                    <div style="font-size:11.5px;font-weight:700;">Mamaearth · 2h ago</div>
+                  </div>
+                  <div style="font-size:12px;line-height:1.45;color:var(--ink-soft);">Loved the energy! Two small notes:<br>• Hold the bottle towards camera at 0:08 — more visible<br>• Add MAMA20 code overlay at 0:45</div>
+                </div>
+
+                <div class="sec-lbl">Revision needed by</div>
+                <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:13px;font-weight:700;">Dec 10</span>
+                  <span style="font-size:11px;color:var(--amber);font-weight:700;">in 3 days</span>
+                </div>
+
+                <div class="sec-lbl">Previous version</div>
+                <div style="background:linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);border-radius:12px;aspect-ratio:9/14;display:flex;align-items:center;justify-content:center;color:white;font-size:32px;position:relative;height:170px;">
+                  ▶
+                  <div style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.5);color:white;font-size:9.5px;padding:2px 5px;border-radius:4px;">v1 · vitc_draft.mp4</div>
+                </div>
+              </div>
+              <div style="padding: 12px 0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button class="btn outline">Reply</button>
+                <button class="btn">Upload v2</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">11 · FEEDBACK</div>
+          <div class="pc-name">Revisions tracked</div>
+          <div class="pc-desc">Version history + scoped feedback. No more "which file did you mean?"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FLOW 5 — PROFILE & SETTINGS
+       ============================================================ -->
+  <section class="flow-section">
+    <div class="flow-head">
+      <span class="n">FLOW 05</span>
+      <h2>Profile &amp; settings</h2>
+    </div>
+    <p class="flow-desc">Creator manages rates, niches, blocked brands, and connected accounts. This is also where they update their public-facing profile data that brands see in discovery.</p>
+
+    <div class="flow-row">
+      <!-- SCREEN 12: PROFILE -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="app-title">Profile</div>
+                <div class="right"><div class="icon-btn">⚙</div></div>
+              </div>
+              <div class="scroll-area">
+                <div style="text-align:center;margin-bottom:14px;">
+                  <div class="avatar xl" style="margin:0 auto 8px;">PR</div>
+                  <div style="font-size:15px;font-weight:800;">Priya · @priya.reads</div>
+                  <div style="font-size:11px;color:var(--green);font-weight:700;display:inline-flex;align-items:center;gap:4px;margin-top:3px;">
+                    <span style="width:14px;height:14px;background:var(--green);color:white;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8px;">✓</span>
+                    OAuth-verified
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="set-row">
+                    <span class="nm">Rates</span>
+                    <span class="va">From ₹35K <span class="chevron">›</span></span>
+                  </div>
+                  <div class="set-row">
+                    <span class="nm">Niches</span>
+                    <span class="va">Books · Lifestyle <span class="chevron">›</span></span>
+                  </div>
+                  <div class="set-row">
+                    <span class="nm">Languages</span>
+                    <span class="va">EN · HI <span class="chevron">›</span></span>
+                  </div>
+                  <div class="set-row">
+                    <span class="nm">Blocked brands</span>
+                    <span class="va">2 <span class="chevron">›</span></span>
+                  </div>
+                  <div class="set-row">
+                    <span class="nm">Payment details</span>
+                    <span class="va" style="color:var(--green);">UPI added ✓ <span class="chevron">›</span></span>
+                  </div>
+                </div>
+
+                <div class="sec-lbl">Connected accounts</div>
+                <div class="card">
+                  <div class="set-row">
+                    <span class="nm" style="display:flex;align-items:center;gap:8px;">
+                      <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);color:white;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">IG</span>
+                      Instagram
+                    </span>
+                    <span class="va" style="color:var(--green);">Connected ✓</span>
+                  </div>
+                  <div class="set-row">
+                    <span class="nm" style="display:flex;align-items:center;gap:8px;">
+                      <span style="width:22px;height:22px;border-radius:6px;background:#ef4444;color:white;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">▶</span>
+                      YouTube
+                    </span>
+                    <span class="va" style="color:var(--accent);font-weight:700;">Connect →</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab"><span class="ic">⌂</span>Home</div>
+                <div class="tab"><span class="ic">✉</span>Offers</div>
+                <div class="tab"><span class="ic">▣</span>Deals</div>
+                <div class="tab active"><span class="ic">⊙</span>Profile</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">12 · PROFILE</div>
+          <div class="pc-name">Rates &amp; preferences</div>
+          <div class="pc-desc">Single screen for everything that controls who reaches them &amp; how.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FLOW 6 — INSIGHTS & ANALYTICS
+       ============================================================ -->
+  <section class="flow-section">
+    <div class="flow-head">
+      <span class="n">FLOW 06</span>
+      <h2>Insights &amp; analytics</h2>
+    </div>
+    <p class="flow-desc">Cross-platform performance (IG + YT + TikTok via Phyllo) and brand-deal performance — the views creators don't get from native tools. Surfaced inside the app after the first claimed deal; before that, a teased preview lives on Home.</p>
+
+    <div class="flow-row">
+      <!-- SCREEN 13: INSIGHTS OVERVIEW -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Insights</div>
+                <div class="right"><div class="icon-btn">⊻</div></div>
+              </div>
+              <div class="scroll-area">
+                <div class="period-tabs">
+                  <div class="pill">7d</div>
+                  <div class="pill active">30d</div>
+                  <div class="pill">90d</div>
+                </div>
+
+                <div class="pill-tabs">
+                  <div class="pill active">All</div>
+                  <div class="pill"><span style="background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;margin-right:2px;">IG</span> Instagram</div>
+                  <div class="pill"><span style="color:#ef4444;font-weight:800;margin-right:2px;">▶</span> YouTube</div>
+                </div>
+
+                <div class="metric-hero">
+                  <div class="lbl">Total reach · 30d</div>
+                  <div class="big">142.3K</div>
+                  <div class="delta">↑ +18% vs. previous 30d</div>
+                  <svg class="chart-svg" viewBox="0 0 240 50" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#5b3eea" stop-opacity="0.32"/>
+                        <stop offset="100%" stop-color="#5b3eea" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,38 L34,34 L68,36 L102,28 L136,22 L170,18 L204,14 L240,6 L240,50 L0,50 Z" fill="url(#gA)"/>
+                    <path d="M0,38 L34,34 L68,36 L102,28 L136,22 L170,18 L204,14 L240,6" stroke="#5b3eea" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="240" cy="6" r="3" fill="#5b3eea"/>
+                  </svg>
+                </div>
+
+                <div class="metric-grid">
+                  <div class="mc">
+                    <div class="lbl">Engagement</div>
+                    <div class="v">4.8%</div>
+                    <div class="d">↑ +0.3pp</div>
+                  </div>
+                  <div class="mc">
+                    <div class="lbl">New followers</div>
+                    <div class="v">+2,140</div>
+                    <div class="d">↑ +12%</div>
+                  </div>
+                  <div class="mc">
+                    <div class="lbl">Avg likes</div>
+                    <div class="v">8.4K</div>
+                    <div class="d">↑ +9%</div>
+                  </div>
+                  <div class="mc">
+                    <div class="lbl">Saves</div>
+                    <div class="v">2,108</div>
+                    <div class="d">↑ +24%</div>
+                  </div>
+                </div>
+
+                <div class="sec-lbl" style="margin-top:4px;">Top post · 30d</div>
+                <div class="top-post">
+                  <div class="thumb">▶</div>
+                  <div class="meta">
+                    <div class="ttl">5 books that changed how I read</div>
+                    <div class="sub">Reel · Nov 28 · Instagram</div>
+                    <div class="stats">
+                      <span><strong>24.1K</strong> views</span>
+                      <span><strong>1.8K</strong> likes</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">13 · INSIGHTS</div>
+          <div class="pc-name">Cross-platform overview</div>
+          <div class="pc-desc">Unified reach, engagement, growth across IG / YT / TikTok via Phyllo.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 14: DEAL PERFORMANCE -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Deal performance</div>
+                <div class="right" style="width:32px"></div>
+              </div>
+              <div class="scroll-area">
+                <div class="deal-hero">
+                  <div class="l">Your paid posts</div>
+                  <div class="b">1.18× organic baseline</div>
+                  <div class="s">5 brand deals · last 90 days</div>
+                </div>
+
+                <div class="sec-lbl" style="margin-top:0;">Per deal vs. your baseline</div>
+
+                <div class="perf-row">
+                  <div class="top">
+                    <div class="brand-logo sm bl-mama">M</div>
+                    <div class="nm">Mamaearth · Reel</div>
+                    <div class="mu up">1.42×</div>
+                  </div>
+                  <div class="bar-wrap">
+                    <div class="fill" style="width:71%"></div>
+                    <div class="baseline" style="left:50%"></div>
+                  </div>
+                </div>
+
+                <div class="perf-row">
+                  <div class="top">
+                    <div class="brand-logo sm bl-owl">SO</div>
+                    <div class="nm">Sleepy Owl · Story</div>
+                    <div class="mu up">1.31×</div>
+                  </div>
+                  <div class="bar-wrap">
+                    <div class="fill" style="width:65%"></div>
+                    <div class="baseline" style="left:50%"></div>
+                  </div>
+                </div>
+
+                <div class="perf-row">
+                  <div class="top">
+                    <div class="brand-logo sm bl-myntra">M</div>
+                    <div class="nm">Myntra · Reel</div>
+                    <div class="mu up">1.15×</div>
+                  </div>
+                  <div class="bar-wrap">
+                    <div class="fill" style="width:57%"></div>
+                    <div class="baseline" style="left:50%"></div>
+                  </div>
+                </div>
+
+                <div class="perf-row">
+                  <div class="top">
+                    <div class="brand-logo sm bl-boat">b</div>
+                    <div class="nm">boAt · Reel</div>
+                    <div class="mu dn">0.97×</div>
+                  </div>
+                  <div class="bar-wrap">
+                    <div class="fill bad" style="width:48%"></div>
+                    <div class="baseline" style="left:50%"></div>
+                  </div>
+                </div>
+
+                <div class="insight-card">
+                  <div class="l">Insight</div>
+                  <div class="txt">Your <strong>skincare</strong> deals perform <strong>1.4× higher</strong> than your overall paid average. Lean into this category in your rate card.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">14 · DEAL PERFORMANCE</div>
+          <div class="pc-name">Paid vs. organic</div>
+          <div class="pc-desc">Unique to us — IG Insights and YT Studio don't surface this comparison.</div>
+        </div>
+      </div>
+
+      <div class="connector">→</div>
+
+      <!-- SCREEN 15: AUDIENCE -->
+      <div class="phone-cell">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="icons">
+                <span class="signal"><span></span><span></span><span></span></span>
+                <span style="font-size:10px;font-weight:600;">5G</span>
+                <span class="battery"><span></span></span>
+              </span>
+            </div>
+            <div class="app-body">
+              <div class="app-header">
+                <div class="left"><div class="back-btn">←</div></div>
+                <div class="app-title" style="font-size:14px;">Audience</div>
+                <div class="right" style="width:32px"></div>
+              </div>
+              <div class="scroll-area">
+                <div class="card" style="text-align:center;padding:13px;margin-bottom:12px;">
+                  <div style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.06em;">Total followers</div>
+                  <div style="font-size:24px;font-weight:800;margin-top:3px;letter-spacing:-0.01em;">112.4K</div>
+                  <div style="font-size:11px;color:var(--muted);">85K Instagram · 27K YouTube</div>
+                </div>
+
+                <div class="sec-lbl" style="margin-top:0;">Age</div>
+                <div class="card">
+                  <div class="age-row">
+                    <span class="agl">18–24</span>
+                    <div class="agbar"><div class="agfill" style="width:28%"></div></div>
+                    <span class="agv">28%</span>
+                  </div>
+                  <div class="age-row">
+                    <span class="agl">25–34</span>
+                    <div class="agbar"><div class="agfill" style="width:47%"></div></div>
+                    <span class="agv">47%</span>
+                  </div>
+                  <div class="age-row">
+                    <span class="agl">35–44</span>
+                    <div class="agbar"><div class="agfill" style="width:18%"></div></div>
+                    <span class="agv">18%</span>
+                  </div>
+                  <div class="age-row">
+                    <span class="agl">45+</span>
+                    <div class="agbar"><div class="agfill" style="width:7%"></div></div>
+                    <span class="agv">7%</span>
+                  </div>
+                </div>
+
+                <div class="sec-lbl">Gender</div>
+                <div class="donut-wrap">
+                  <svg class="donut" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#efece4" stroke-width="6"/>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#5b3eea" stroke-width="6" stroke-dasharray="68 100" transform="rotate(-90 18 18)"/>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#8b75f0" stroke-width="6" stroke-dasharray="31 100" transform="rotate(154.8 18 18)"/>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#c4b8f6" stroke-width="6" stroke-dasharray="1 100" transform="rotate(266.4 18 18)"/>
+                  </svg>
+                  <div class="donut-legend">
+                    <div class="lr"><span class="lk">Female</span><strong>68%</strong></div>
+                    <div class="lr m"><span class="lk">Male</span><strong>31%</strong></div>
+                    <div class="lr o"><span class="lk">Other</span><strong>1%</strong></div>
+                  </div>
+                </div>
+
+                <div class="sec-lbl">Top locations</div>
+                <div class="card">
+                  <div class="loc-row"><span class="lnm">Mumbai</span><span class="lpct">22%</span></div>
+                  <div class="loc-row"><span class="lnm">Delhi NCR</span><span class="lpct">18%</span></div>
+                  <div class="loc-row"><span class="lnm">Bangalore</span><span class="lpct">14%</span></div>
+                  <div class="loc-row"><span class="lnm">Pune</span><span class="lpct">7%</span></div>
+                  <div class="loc-row"><span class="lnm">Hyderabad</span><span class="lpct">6%</span></div>
+                </div>
+
+                <div class="sec-lbl">Top interests</div>
+                <div class="tag-row">
+                  <span class="tag">Books</span>
+                  <span class="tag">Wellness</span>
+                  <span class="tag">Sustainable living</span>
+                  <span class="tag">Slow travel</span>
+                  <span class="tag">Skincare</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">
+          <div class="pc-step">15 · AUDIENCE</div>
+          <div class="pc-name">Demographics &amp; geo</div>
+          <div class="pc-desc">Age, gender, locations, interests — leverage for rate negotiations with brands.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURE LIST
+       ============================================================ -->
+  <section class="features">
+    <h2>Feature list · MVP</h2>
+    <div class="features-grid">
+      <div class="feat">
+        <div class="ft">Brand-led invite link</div>
+        <div class="fd">Tokenized URL routed via WhatsApp / email. Carries brand + offer context.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Phyllo OAuth claim</div>
+        <div class="fd">Identity verification + analytics data pipe. IG / YT / TikTok / X.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Pipeline dashboard</div>
+        <div class="fd">Viewed / shortlisted / active / pending stats + brand-viewing strip.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Offer inbox</div>
+        <div class="fd">Filterable list with status badges (new, viewed, expiring, accepted).</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Offer detail + accept</div>
+        <div class="fd">Brief, rate, timeline, deliverables. Accept triggers take-rate invoice.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Counter offer</div>
+        <div class="fd">Rate / deliverables editable. One-shot back-and-forth with brand.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Active deal view</div>
+        <div class="fd">Progress stepper (brief → drafts → approved → posted → paid).</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Deliverables upload</div>
+        <div class="fd">Per-deliverable file upload + inline brand checklist.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Revision feedback</div>
+        <div class="fd">Versioned drafts, scoped notes, deadline for revision.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">WhatsApp pipe</div>
+        <div class="fd">Composio bridges creator's WhatsApp ↔ brand's in-app inbox.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Profile + rate card</div>
+        <div class="fd">Rates, niches, languages, blocked brands, payment details (UPI).</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Connected accounts</div>
+        <div class="fd">Add YouTube etc. post-claim to unlock cross-platform analytics.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Cross-platform insights</div>
+        <div class="fd">Unified reach, engagement, growth across IG / YT / TikTok via Phyllo.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Brand-deal performance</div>
+        <div class="fd">Paid posts vs. your organic baseline · per-deal &amp; per-category insights.</div>
+      </div>
+      <div class="feat">
+        <div class="ft">Audience demographics</div>
+        <div class="fd">Age, gender, locations, interests — used for rate negotiations.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Draft v1 · Mobile prototype for team review · 15 screens across 6 flows.
+  </footer>
+
+</article>
+</body>
+</html>
